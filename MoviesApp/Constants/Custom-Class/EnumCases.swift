@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+enum MyErrors: Error {
+    
+    case invalidURL
+    case ParsingError
+    case serverError
+    case dataError
+    
+}
