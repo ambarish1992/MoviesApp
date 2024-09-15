@@ -99,12 +99,14 @@
 		33198E032C95FF8D00CC5BFE /* MoviesApp */ = {
 			isa = PBXGroup;
 			children = (
-				33198E042C95FF8D00CC5BFE /* AppDelegate.swift */,
-				33198E062C95FF8D00CC5BFE /* SceneDelegate.swift */,
-				33198E082C95FF8D00CC5BFE /* ViewController.swift */,
-				33198E0A2C95FF8D00CC5BFE /* Main.storyboard */,
+				334B1E9E2C967D0700CD65CC /* ViewModel */,
+				334B1E9D2C967CF500CD65CC /* Model */,
+				334B1E9C2C967CE900CD65CC /* Constants */,
+				334B1E9B2C967CD100CD65CC /* Resource */,
+				334B1E992C967CA100CD65CC /* Cells */,
+				334B1E982C967C8800CD65CC /* View */,
+				334B1E9A2C967CAC00CD65CC /* StoryBoard */,
 				33198E0D2C95FF8F00CC5BFE /* Assets.xcassets */,
-				33198E0F2C95FF8F00CC5BFE /* LaunchScreen.storyboard */,
 				33198E122C95FF8F00CC5BFE /* Info.plist */,
 			);
 			path = MoviesApp;
@@ -125,6 +127,60 @@
 				33198E272C95FF8F00CC5BFE /* MoviesAppUITestsLaunchTests.swift */,
 			);
 			path = MoviesAppUITests;
+			sourceTree = "<group>";
+		};
+		334B1E982C967C8800CD65CC /* View */ = {
+			isa = PBXGroup;
+			children = (
+				33198E082C95FF8D00CC5BFE /* ViewController.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		334B1E992C967CA100CD65CC /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		334B1E9A2C967CAC00CD65CC /* StoryBoard */ = {
+			isa = PBXGroup;
+			children = (
+				33198E0A2C95FF8D00CC5BFE /* Main.storyboard */,
+				33198E0F2C95FF8F00CC5BFE /* LaunchScreen.storyboard */,
+			);
+			path = StoryBoard;
+			sourceTree = "<group>";
+		};
+		334B1E9B2C967CD100CD65CC /* Resource */ = {
+			isa = PBXGroup;
+			children = (
+				33198E042C95FF8D00CC5BFE /* AppDelegate.swift */,
+				33198E062C95FF8D00CC5BFE /* SceneDelegate.swift */,
+			);
+			path = Resource;
+			sourceTree = "<group>";
+		};
+		334B1E9C2C967CE900CD65CC /* Constants */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Constants;
+			sourceTree = "<group>";
+		};
+		334B1E9D2C967CF500CD65CC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		334B1E9E2C967D0700CD65CC /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
