@@ -9,16 +9,70 @@ import UIKit
 
 class MovieListViewController: UIViewController, UISearchBarDelegate {
     
+    @IBOutlet weak var searchBtn: UIButton!
+    @IBOutlet weak var searchTrailConstraint: NSLayoutConstraint!
     @IBOutlet weak var SearchTxt: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
     var dataModel: [MovieInfo] = []
+    var searchData: [Search] = []
+    var isChecked = false
+    var result = UserDefaults.standard
+    var status: String?
+    var isSearch = Bool()
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.isSearch = false
+        self.searchTrailConstraint.constant = 0
         self.SearchTxt.delegate = self
         // Do any additional setup after loading the view.
+    }
+    
+    @IBAction func searchBtnTapped(_ sender: Any) {
+        
+        self.isSearch = true
+        if SearchTxt.text != "" {
+            
+            let res = SearchTxt.text
+            
+            let ress = res?.lowercased()
+            
+            FIOProgressView.shared.showProgressView(self.view)
+            NetworkManager.searchMovies(urlstr: SearchResEndPoint, movieName: ress ?? "") { res in
+                
+                if successCode == 200 {
+                    
+                    FIOProgressView.shared.hideProgressView()
+                    var results = res.map { resultss in
+                        
+                        self.searchData = resultss
+                        
+                        print(self.searchData)
+                        
+                        DispatchQueue.main.async {
+                            
+                            self.tableView.reloadData()
+                            
+                        }
+                    }
+                }else {
+                    
+                    FIOProgressView.shared.hideProgressView()
+                    self.showAlert(title: "Warning", msg: "Please check the api or the url")
+                }
+            }
+            
+        }else {
+            
+            //self.isSearch = false
+            self.searchTrailConstraint.constant = 0
+            self.dataModel = []
+            
+            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
+            self.FetchMovie()
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -28,6 +82,8 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     
     func FetchMovie() {
         
+        self.dataModel = []
+        self.isSearch = false
         FIOProgressView.shared.showProgressView(self.view)
         NetworkManager.fetchMovies(urlstr: moviesFetchEndPoint) { res in
             
@@ -56,26 +112,115 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return self.dataModel.count ?? 0
+        if self.isSearch == true {
+            
+            if self.searchData.count > 0 {
+                
+                self.tableView.restore()
+                return self.searchData.count
+                
+            }else {
+                
+                self.tableView.setEmptyMessage("No results found", color: .black)
+                return 0
+            }
+            
+        }else {
+            
+            if self.dataModel.count > 0 {
+                
+                self.tableView.restore()
+                return self.dataModel.count
+                
+            }else {
+                
+                self.tableView.setEmptyMessage("No results found", color: .black)
+                return 0
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = self.tableView.dequeueReusableCell(withIdentifier: "MoviesTableViewCell", for: indexPath) as! MoviesTableViewCell
         
-        let res = self.dataModel[indexPath.row]
-        
-        let actualUrl = res.poster ?? ""
-        
-        if actualUrl != "" {
+        if self.isSearch == true {
             
-            cell.MovieImg.imageFromServerURL(actualUrl, placeHolder: UIImage(systemName: "wrongwaysign.fill"))
+            cell.favBtn.isHidden = true
+            let res = self.searchData[indexPath.row]
+            let actualUrl = res.poster
+            
+            if actualUrl != "" {
+                
+                cell.MovieImg.imageFromServerURL(actualUrl, placeHolder: UIImage(systemName: "wrongwaysign.fill"))
+            }
+            
+            cell.titleLbl.text = res.title 
+            cell.dateLbl.text = res.year
+            
+        }else {
+            
+            cell.favBtn.isHidden = false
+            let res = self.dataModel[indexPath.row]
+            let actualUrl = res.poster ?? ""
+            
+            if actualUrl != "" {
+                
+                cell.MovieImg.imageFromServerURL(actualUrl, placeHolder: UIImage(systemName: "wrongwaysign.fill"))
+            }
+            
+            let rr = self.result.string(forKey: "status")
+            
+            print(rr)
+            
+            if rr == "yes" {
+                
+                cell.favBtn.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                
+            }else {
+                
+                cell.favBtn.setImage(UIImage(systemName: "heart"), for: .normal)
+                
+            }
+            
+            cell.titleLbl.text = res.title ?? ""
+            cell.dateLbl.text = res.released ?? ""
+            
+            cell.favBtn.tag = indexPath.row
+            cell.favBtn.addTarget(self, action: #selector(self.FavBtnTapped), for: .touchUpInside)
+            
         }
         
-        cell.titleLbl.text = res.title ?? ""
-        cell.dateLbl.text = res.released ?? ""
-        
         return cell
+    }
+    
+    @objc func FavBtnTapped(sender: UIButton) {
+        
+        self.isChecked = !self.isChecked
+        let index = IndexPath(row: sender.tag, section: 0)
+        
+        if let cell = self.tableView.cellForRow(at: index) as? MoviesTableViewCell {
+            
+            if self.isChecked == true {
+                
+                self.status = "yes"
+                cell.favBtn.setImage(UIImage(systemName: "heart.fill"), for: .normal)
+                self.result.removeObject(forKey: "status")
+                self.result.set(self.status, forKey: "status")
+                self.result.synchronize()
+                self.FetchMovie()
+                
+            }else {
+                
+                self.status = "no"
+                cell.favBtn.setImage(UIImage(systemName: "heart"), for: .normal)
+                self.result.removeObject(forKey: "status")
+                self.result.set(self.status, forKey: "status")
+                self.result.synchronize()
+                self.FetchMovie()
+                
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -85,10 +230,34 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        let res = self.dataModel[indexPath.row]
-        let VC = self.storyboard!.instantiateViewController(withIdentifier: "MovieDetailsViewController") as! MovieDetailsViewController
-        VC.movieData = res
-        self.present(VC, animated: true)
+        if self.dataModel.count > 0 {
+            
+            let res = self.dataModel[indexPath.row]
+            let VC = self.storyboard!.instantiateViewController(withIdentifier: "MovieDetailsViewController") as! MovieDetailsViewController
+            VC.movieData = res
+            self.present(VC, animated: true)
+            
+        }
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         
+        
+        
+    }
+    
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+        self.searchTrailConstraint.constant = -50
+        self.SearchTxt.becomeFirstResponder()
+        
+        if self.SearchTxt.text != "" {
+            
+            self.isSearch = true
+            
+        }else {
+            
+            self.isSearch = false
+        }
     }
 }

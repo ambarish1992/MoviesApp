@@ -17,6 +17,32 @@ final class MoviesAppTests: XCTestCase {
     override func tearDownWithError() throws {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
+    
+    func testFetchMovieData() {
+        
+        NetworkManager.fetchMovies(urlstr: moviesFetchEndPoint) { res in
+            
+            let ress = res.map { results in
+                
+                XCTAssertEqual(results.title, "Guardians of the Galaxy Vol. 2")
+                
+            }
+        }
+    }
+    
+    func testSearchMovieData() {
+        
+        NetworkManager.searchMovies(urlstr: SearchResEndPoint, movieName: "ave" ?? "") { res in
+            
+            let ress = res.map { results in
+                
+                for i in results {
+                    
+                    XCTAssertEqual(i.title, "Monument Ave.")
+                }
+            }
+        }
+    }
 
     func testExample() throws {
         // This is an example of a functional test case.

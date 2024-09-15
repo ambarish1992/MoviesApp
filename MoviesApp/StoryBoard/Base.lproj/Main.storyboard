@@ -3,6 +3,7 @@
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -45,7 +46,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <searchBar contentMode="redraw" translatesAutoresizingMaskIntoConstraints="NO" id="7pL-eG-4Fp">
-                                <rect key="frame" x="0.0" y="59" width="393" height="50"/>
+                                <rect key="frame" x="0.0" y="59" width="343" height="50"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="50" id="3oZ-mY-DNe"/>
@@ -121,6 +122,21 @@
                                     <outlet property="delegate" destination="QNy-eB-XeE" id="Bp0-Ou-qy8"/>
                                 </connections>
                             </tableView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FGK-Ya-G9f">
+                                <rect key="frame" x="348" y="69" width="30" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="gJf-3H-kFi"/>
+                                    <constraint firstAttribute="width" constant="30" id="ibx-5f-Tfj"/>
+                                </constraints>
+                                <color key="tintColor" systemColor="systemGrayColor"/>
+                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                <state key="normal">
+                                    <imageReference key="image" image="magnifyingglass" catalog="system" symbolScale="large"/>
+                                </state>
+                                <connections>
+                                    <action selector="searchBtnTapped:" destination="QNy-eB-XeE" eventType="touchUpInside" id="GGs-0O-XcM"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="b1m-oc-C2e"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -128,14 +144,18 @@
                             <constraint firstItem="b1m-oc-C2e" firstAttribute="trailing" secondItem="5sC-oa-Azd" secondAttribute="trailing" id="Irc-1C-jxm"/>
                             <constraint firstItem="7pL-eG-4Fp" firstAttribute="top" secondItem="b1m-oc-C2e" secondAttribute="top" id="KeT-Ww-ZHf"/>
                             <constraint firstItem="5sC-oa-Azd" firstAttribute="leading" secondItem="b1m-oc-C2e" secondAttribute="leading" id="OY4-Tu-SrJ"/>
-                            <constraint firstItem="7pL-eG-4Fp" firstAttribute="trailing" secondItem="b1m-oc-C2e" secondAttribute="trailing" id="okq-L0-JVp"/>
+                            <constraint firstItem="FGK-Ya-G9f" firstAttribute="leading" secondItem="7pL-eG-4Fp" secondAttribute="trailing" constant="5" id="dog-wY-eKE"/>
                             <constraint firstItem="b1m-oc-C2e" firstAttribute="bottom" secondItem="5sC-oa-Azd" secondAttribute="bottom" id="pQf-Xn-G11"/>
+                            <constraint firstItem="7pL-eG-4Fp" firstAttribute="trailing" secondItem="b1m-oc-C2e" secondAttribute="trailing" constant="-50" id="q4a-VW-aMS"/>
                             <constraint firstItem="5sC-oa-Azd" firstAttribute="top" secondItem="7pL-eG-4Fp" secondAttribute="bottom" id="toP-NX-BKT"/>
+                            <constraint firstItem="FGK-Ya-G9f" firstAttribute="centerY" secondItem="7pL-eG-4Fp" secondAttribute="centerY" id="uI1-C0-i1e"/>
                             <constraint firstItem="7pL-eG-4Fp" firstAttribute="leading" secondItem="b1m-oc-C2e" secondAttribute="leading" id="yKc-pU-K0Z"/>
                         </constraints>
                     </view>
                     <connections>
                         <outlet property="SearchTxt" destination="7pL-eG-4Fp" id="zIp-zu-Njb"/>
+                        <outlet property="searchBtn" destination="FGK-Ya-G9f" id="qT1-rn-ztN"/>
+                        <outlet property="searchTrailConstraint" destination="q4a-VW-aMS" id="n1b-0H-ar9"/>
                         <outlet property="tableView" destination="5sC-oa-Azd" id="akC-Ow-bfJ"/>
                     </connections>
                 </viewController>
@@ -267,12 +287,16 @@
     <resources>
         <image name="heart" catalog="system" width="128" height="107"/>
         <image name="logo-black" width="1500" height="1500"/>
+        <image name="magnifyingglass" catalog="system" width="128" height="117"/>
         <image name="wrongwaysign.fill" catalog="system" width="128" height="123"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>
         <systemColor name="systemGray5Color">
             <color red="0.8980392157" green="0.8980392157" blue="0.91764705879999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+        <systemColor name="systemGrayColor">
+            <color red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemPurpleColor">
             <color red="0.68627450980000004" green="0.32156862749999998" blue="0.87058823529999996" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
