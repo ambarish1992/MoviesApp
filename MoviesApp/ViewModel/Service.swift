@@ -9,9 +9,11 @@ import Foundation
 
 class NetworkManager {
     
+    
     class func fetchMovies(urlstr: String, completion: @escaping(Result<MovieInfo, Error>) -> Void) {
         
         var request: URLRequest?
+        var responsemodel = MovieInfo()
         
         print(urlstr)
         
@@ -29,9 +31,9 @@ class NetworkManager {
                     
                     if let data = data {
                         
-                        let res = try! JSONDecoder().decode(MovieInfo.self, from: data)
+                        let res = try? JSONDecoder().decode(MovieInfo.self, from: data)
                         
-                        completion(.success(res))
+                        completion(.success((res ?? responsemodel)))
                         
                     }else {
                         
@@ -53,11 +55,9 @@ class NetworkManager {
         let result: URL?
         let results: URL?
         var request: URLRequest?
-        //var responseModel = SearchInfo()
+        var responseModel = [Search]()
         
         let ress = "&s=\(movieName)"
-        
-        
         
         request = URLRequest(url: URL(string: urlstr+(ress))!)
         print(request)
@@ -74,9 +74,9 @@ class NetworkManager {
                     
                     if let data = data {
                         
-                        let res = try! JSONDecoder().decode(SearchInfo.self, from: data)
+                        let res = try? JSONDecoder().decode(SearchInfo.self, from: data)
                         
-                        completion(.success(res.search))
+                        completion(.success(res?.search ?? responseModel))
                         
                     }else {
                         

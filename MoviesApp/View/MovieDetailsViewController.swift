@@ -27,6 +27,7 @@ class MovieDetailsViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         
+        self.checkInternet()
         DispatchQueue.main.async {
             
             let actualUrl = self.movieData?.poster ?? ""

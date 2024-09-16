@@ -15,6 +15,12 @@ class SplashViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+        
+        self.checkInternet()
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {

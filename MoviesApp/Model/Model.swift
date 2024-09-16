@@ -44,6 +44,8 @@ struct MovieInfo: Codable {
         case response = "Response"
     }
     
+    public init() {}
+    
     init(from decoder: Decoder) throws {
         let values = try? decoder.container(keyedBy: CodingKeys.self)
         
@@ -87,9 +89,11 @@ struct Rating: Codable {
 
 // MARK: - Search Results
 struct SearchInfo: Codable {
-    let search: [Search]
-    let totalResults, response: String
-
+    var search: [Search]?
+    var totalResults, response: String?
+    
+    public init() {}
+    
     enum CodingKeys: String, CodingKey {
         case search = "Search"
         case totalResults
@@ -99,9 +103,9 @@ struct SearchInfo: Codable {
 
 // MARK: - Search
 struct Search: Codable {
-    let title, year, imdbID: String
-    let type: TypeEnum
-    let poster: String
+    var title, year, imdbID: String?
+    var type: TypeEnum?
+    var poster: String?
 
     enum CodingKeys: String, CodingKey {
         case title = "Title"
@@ -109,6 +113,19 @@ struct Search: Codable {
         case imdbID
         case type = "Type"
         case poster = "Poster"
+    }
+    
+    public init() {}
+    
+    init(from decoder: Decoder) throws {
+        let values = try? decoder.container(keyedBy: CodingKeys.self)
+        
+        title = try? values?.decodeIfPresent(String.self, forKey: .title)
+        year = try? values?.decodeIfPresent(String.self, forKey: .year)
+        imdbID = try? values?.decodeIfPresent(String.self, forKey: .imdbID)
+        type = try? values?.decodeIfPresent(TypeEnum.self, forKey: .type)
+        poster = try? values?.decodeIfPresent(String.self, forKey: .poster)
+        
     }
 }
 

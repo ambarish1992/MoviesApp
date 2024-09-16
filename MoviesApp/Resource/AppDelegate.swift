@@ -18,8 +18,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if Reachability.isConnectedToNetwork(){
             print("Internet Connection Available!")
         }else{
-            var alertController = UIAlertController(title: "Title", message: "Any message", preferredStyle: .actionSheet)
-            var okAction = UIAlertAction(title: "Yes", style: .default) {
+            let alertController = UIAlertController(title: "Title", message: "Any message", preferredStyle: .actionSheet)
+            let okAction = UIAlertAction(title: "Yes", style: .default) {
                                 UIAlertAction in
                                 NSLog("OK Pressed")
                             }

@@ -19,6 +19,7 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     var isChecked = false
     var result = UserDefaults.standard
     var status: String?
+    var searchStat: String?
     var isSearch = Bool()
     
     override func viewDidLoad() {
@@ -32,51 +33,28 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     
     @IBAction func searchBtnTapped(_ sender: Any) {
         
-        self.isSearch = true
-        if SearchTxt.text != "" {
+        self.doSearch()
+        
+        if self.searchStat == "yes" {
             
-            let res = SearchTxt.text
-            
-            let ress = res?.lowercased()
-            
-            FIOProgressView.shared.showProgressView(self.view)
-            NetworkManager.searchMovies(urlstr: SearchResEndPoint, movieName: ress ?? "") { res in
-                
-                if successCode == 200 {
-                    
-                    FIOProgressView.shared.hideProgressView()
-                    var results = res.map { resultss in
-                        
-                        self.searchData = resultss
-                        
-                        print(self.searchData)
-                        
-                        DispatchQueue.main.async {
-                            
-                            self.tableView.reloadData()
-                            
-                        }
-                    }
-                }else {
-                    
-                    FIOProgressView.shared.hideProgressView()
-                    self.showAlert(title: "Warning", msg: "Please check the api or the url")
-                }
-            }
+            self.searchTrailConstraint.constant = 0
+            SearchTxt.text = ""
+            self.SearchTxt.resignFirstResponder()
+            self.dataModel = []
+            self.FetchMovie()
             
         }else {
             
-            //self.isSearch = false
-            self.searchTrailConstraint.constant = 0
-            self.dataModel = []
+            self.doSearch()
             
-            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
-            self.FetchMovie()
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
+        self.checkInternet()
+        
+        self.dataModel = []
         self.FetchMovie()
     }
     
@@ -92,10 +70,12 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
                 FIOProgressView.shared.hideProgressView()
                 var results = res.map { resultss in
                     
+                    self.dataModel = []
                     self.dataModel.append(resultss)
                     
                     DispatchQueue.main.async { [weak self] in
                         
+                        self?.SearchTxt.resignFirstResponder()
                         self?.tableView.reloadData()
                     }
                 }
@@ -152,7 +132,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
             
             if actualUrl != "" {
                 
-                cell.MovieImg.imageFromServerURL(actualUrl, placeHolder: UIImage(systemName: "wrongwaysign.fill"))
+                cell.MovieImg.imageFromServerURL(actualUrl ?? "", placeHolder: UIImage(systemName: "wrongwaysign.fill"))
             }
             
             cell.titleLbl.text = res.title 
@@ -240,9 +220,9 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        
+        self.doSearch()
         
     }
     
@@ -251,13 +231,76 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         self.searchTrailConstraint.constant = -50
         self.SearchTxt.becomeFirstResponder()
         
+//        if self.SearchTxt.text != "" {
+//            
+//            self.searchTrailConstraint.constant = -50
+//            self.isSearch = true
+//            
+//        }else {
+//            
+//            self.searchTrailConstraint.constant = 0
+//            self.isSearch = false
+//        }
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        
         if self.SearchTxt.text != "" {
             
-            self.isSearch = true
+            self.searchStat = "yes"
+            self.searchBtn.setImage(UIImage(named: "Close"), for: .normal)
             
         }else {
             
-            self.isSearch = false
+            self.searchStat = "no"
+            self.searchBtn.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
+        }
+    }
+    
+    func doSearch() {
+        
+        self.searchTrailConstraint.constant = -50
+        self.isSearch = true
+        if SearchTxt.text != "" {
+            
+            let res = SearchTxt.text
+            
+            let ress = res?.lowercased()
+            
+            FIOProgressView.shared.showProgressView(self.view)
+            NetworkManager.searchMovies(urlstr: SearchResEndPoint, movieName: ress ?? "") { res in
+                
+                if successCode == 200 {
+                    
+                    FIOProgressView.shared.hideProgressView()
+                    var results = res.map { resultss in
+                        
+                        self.searchData = resultss
+                        
+                        print(self.searchData)
+                        
+                        DispatchQueue.main.async {
+                            
+                            self.SearchTxt.resignFirstResponder()
+                            self.tableView.reloadData()
+                            
+                        }
+                    }
+                }else {
+                    
+                    FIOProgressView.shared.hideProgressView()
+                    self.showAlert(title: "Warning", msg: "Please check the api or the url")
+                }
+            }
+            
+        }else {
+            
+            //self.isSearch = false
+            self.searchTrailConstraint.constant = 0
+            self.dataModel = []
+            self.dataModel.removeAll()
+            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
+            self.FetchMovie()
         }
     }
 }

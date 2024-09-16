@@ -102,3 +102,27 @@ extension UITableView {
         self.backgroundView = nil
     }
 }
+
+extension UIViewController {
+    
+    func checkInternet() {
+        
+        if !Reachability.isConnectedToNetwork() {
+            
+            self.showAlert(title: "Warning", msg: "Please connect to Wi-Fi or mobile data and continue")
+            
+        }
+    }
+}
+
+extension UIViewController {
+    func hideKeyboardWhenTappedAround() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIViewController.dismissKeyboard))
+        tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+}
