@@ -280,7 +280,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
                     FIOProgressView.shared.hideProgressView()
                     var results = res.map { resultss in
                         
-                        let newArr = resultss.sorted { $0.year ?? "" < $1.year ?? "" }
+                        let newArr = resultss.sorted { $0.year ?? "" > $1.year ?? "" }
                         self.searchData = newArr
                         
                         print(self.searchData)
