@@ -210,13 +210,16 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        if self.dataModel.count > 0 {
+        if self.isSearch == false {
             
-            let res = self.dataModel[indexPath.row]
-            let VC = self.storyboard!.instantiateViewController(withIdentifier: "MovieDetailsViewController") as! MovieDetailsViewController
-            VC.movieData = res
-            self.present(VC, animated: true)
-            
+            if self.dataModel.count > 0 {
+                
+                let res = self.dataModel[indexPath.row]
+                let VC = self.storyboard!.instantiateViewController(withIdentifier: "MovieDetailsViewController") as! MovieDetailsViewController
+                VC.movieData = res
+                self.present(VC, animated: true)
+                
+            }
         }
     }
     
