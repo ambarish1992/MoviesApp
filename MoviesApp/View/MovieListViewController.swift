@@ -15,6 +15,7 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     @IBOutlet weak var tableView: UITableView!
     
     var dataModel: [MovieInfo] = []
+    var searchTimer: Timer?
     var searchData: [Search] = []
     var isChecked = false
     var result = UserDefaults.standard
@@ -26,6 +27,7 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
         super.viewDidLoad()
 
         self.isSearch = false
+        self.addToolBar(textField: self.SearchTxt)
         self.searchTrailConstraint.constant = 0
         self.SearchTxt.delegate = self
         // Do any additional setup after loading the view.
@@ -227,8 +229,18 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         
-        self.doSearch()
-        
+        if self.SearchTxt.text != "" {
+            
+            self.doSearch()
+            
+        }else {
+            
+            self.dataModel = []
+            self.dataModel.removeAll()
+            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
+            self.FetchMovie()
+            
+        }
     }
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
@@ -250,6 +262,11 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         
+        if let searchTimer = searchTimer {
+                searchTimer.invalidate()
+            }
+        searchTimer = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(self.doSearch), userInfo: nil, repeats: false)
+        
         if self.SearchTxt.text != "" {
             
             self.searchStat = "yes"
@@ -262,7 +279,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    func doSearch() {
+    @objc func doSearch() {
         
         self.searchTrailConstraint.constant = -50
         self.isSearch = true
@@ -272,12 +289,12 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
             
             let ress = res?.lowercased()
             
-            FIOProgressView.shared.showProgressView(self.view)
+            //FIOProgressView.shared.showProgressView(self.view)
             NetworkManager.searchMovies(urlstr: SearchResEndPoint, movieName: ress ?? "") { res in
                 
                 if successCode == 200 {
                     
-                    FIOProgressView.shared.hideProgressView()
+                    //FIOProgressView.shared.hideProgressView()
                     var results = res.map { resultss in
                         
                         let newArr = resultss.sorted { $0.year ?? "" > $1.year ?? "" }
@@ -294,7 +311,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
                     }
                 }else {
                     
-                    FIOProgressView.shared.hideProgressView()
+                    //FIOProgressView.shared.hideProgressView()
                     self.showAlert(title: "Warning", msg: "Please check the api or the url")
                 }
             }
@@ -302,11 +319,12 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         }else {
             
             //self.isSearch = false
+            //self.searchStat = "yes"
             self.searchTrailConstraint.constant = 0
-            self.dataModel = []
-            self.dataModel.removeAll()
-            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
-            self.FetchMovie()
+            //            self.dataModel = []
+            //            self.dataModel.removeAll()
+            //            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
+            //            self.FetchMovie()
         }
     }
 }
