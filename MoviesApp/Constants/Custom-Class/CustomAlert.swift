@@ -129,12 +129,12 @@ extension UIViewController {
 
 extension MovieListViewController {
     func addToolBar(textField: UISearchBar){
-        var toolBar = UIToolbar()
+        let toolBar = UIToolbar()
         toolBar.barStyle = UIBarStyle.default
         toolBar.isTranslucent = true
         toolBar.tintColor = UIColor.lightGray
-        var doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.donePressed))
-        var cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.cancelPressed))
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(self.donePressed))
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(self.cancelPressed))
         let spaceButton = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
         toolBar.setItems([cancelButton, spaceButton, doneButton], animated: true)
         toolBar.isUserInteractionEnabled = true
