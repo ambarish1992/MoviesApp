@@ -14,18 +14,21 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     @IBOutlet weak var SearchTxt: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     
-    var dataModel: [MovieInfo] = []
+    //var dataModel: [MovieInfo] = []
     var searchTimer: Timer?
-    var searchData: [Search] = []
+   // var searchDatas: [Search] = []
     var isChecked = false
     var result = UserDefaults.standard
     var status: String?
     var searchStat: String?
     var isSearch = Bool()
     
+    var viewModel = ViewModel()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        self.observeEvent()
         self.isSearch = false
         self.addToolBar(textField: self.SearchTxt)
         self.searchTrailConstraint.constant = 0
@@ -35,19 +38,20 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     
     @IBAction func searchBtnTapped(_ sender: Any) {
         
-        self.doSearch()
-        
         if self.searchStat == "yes" {
             
             self.searchTrailConstraint.constant = 0
             SearchTxt.text = ""
             self.SearchTxt.resignFirstResponder()
-            self.dataModel = []
-            self.FetchMovie()
+            self.viewModel.dataModel = []
+            self.viewModel.fetchData()
             
         }else {
             
-            self.doSearch()
+            let res = SearchTxt.text
+            let ress = res?.lowercased()
+            
+            self.viewModel.searchMovies(movieName: ress ?? "")
             
         }
     }
@@ -56,37 +60,8 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
         
         self.checkInternet()
         
-        self.dataModel = []
-        self.FetchMovie()
-    }
-    
-    func FetchMovie() {
-        
-        self.dataModel = []
-        self.isSearch = false
-        FIOProgressView.shared.showProgressView(self.view)
-        NetworkManager.fetchMovies(urlstr: moviesFetchEndPoint) { res in
-            
-            if successCode == 200 {
-                
-                FIOProgressView.shared.hideProgressView()
-                var results = res.map { resultss in
-                    
-                    self.dataModel = []
-                    self.dataModel.append(resultss)
-                    
-                    DispatchQueue.main.async { [weak self] in
-                        
-                        self?.SearchTxt.resignFirstResponder()
-                        self?.tableView.reloadData()
-                    }
-                }
-            }else {
-                
-                FIOProgressView.shared.hideProgressView()
-                self.showAlert(title: "Warning", msg: "Please check the api or the url")
-            }
-        }
+        self.viewModel.dataModel = []
+        self.viewModel.fetchData()
     }
 }
 
@@ -96,10 +71,10 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         
         if self.isSearch == true {
             
-            if self.searchData.count > 0 {
+            if self.viewModel.searchData.count > 0 {
                 
                 self.tableView.restore()
-                return self.searchData.count
+                return self.viewModel.searchData.count
                 
             }else {
                 
@@ -109,10 +84,10 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
             
         }else {
             
-            if self.dataModel.count > 0 {
+            if self.viewModel.dataModel.count > 0 {
                 
                 self.tableView.restore()
-                return self.dataModel.count
+                return self.viewModel.dataModel.count
                 
             }else {
                 
@@ -130,7 +105,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
             
             cell.favBtn.isHidden = true
             
-            let res = self.searchData[indexPath.row]
+            let res = self.viewModel.searchData[indexPath.row]
             
             let actualUrl = res.poster
             
@@ -145,7 +120,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         }else {
             
             cell.favBtn.isHidden = false
-            let res = self.dataModel[indexPath.row]
+            let res = self.viewModel.dataModel[indexPath.row]
             let actualUrl = res.poster ?? ""
             
             if actualUrl != "" {
@@ -192,7 +167,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
                 self.result.removeObject(forKey: "status")
                 self.result.set(self.status, forKey: "status")
                 self.result.synchronize()
-                self.FetchMovie()
+                self.viewModel.fetchData()
                 
             }else {
                 
@@ -201,7 +176,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
                 self.result.removeObject(forKey: "status")
                 self.result.set(self.status, forKey: "status")
                 self.result.synchronize()
-                self.FetchMovie()
+                self.viewModel.fetchData()
                 
             }
         }
@@ -216,9 +191,9 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         
         if self.isSearch == false {
             
-            if self.dataModel.count > 0 {
+            if self.viewModel.dataModel.count > 0 {
                 
-                let res = self.dataModel[indexPath.row]
+                let res = self.viewModel.dataModel[indexPath.row]
                 let VC = self.storyboard!.instantiateViewController(withIdentifier: "MovieDetailsViewController") as! MovieDetailsViewController
                 VC.movieData = res
                 self.present(VC, animated: true)
@@ -231,17 +206,52 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         
         if self.SearchTxt.text != "" {
             
-            self.doSearch()
+            self.viewModel.searchMovies(movieName: self.SearchTxt.text ?? "")
             
         }else {
             
-            self.dataModel = []
-            self.dataModel.removeAll()
+            self.isSearch = false
+            self.viewModel.dataModel = []
+            self.viewModel.dataModel.removeAll()
             //self.showAlert(title: "Warning", msg: "Please type a movie to search")
-            self.FetchMovie()
+            self.viewModel.fetchData()
             
         }
     }
+    
+    func observeEvent() {
+        viewModel.eventHandler = { [weak self] event in
+            guard let self else { return }
+
+            switch event {
+            case .loading:
+                /// Indicator show
+                print("Product loading....")
+            case .stopLoading:
+                // Indicator hide kardo
+                print("Stop loading...")
+            case .dataLoaded:
+                print("Data loaded...")
+                DispatchQueue.main.async {
+                    // UI Main works well
+                    
+                    if self.isSearch == true {
+                        
+                        self.SearchTxt.resignFirstResponder()
+                        self.tableView.reloadData()
+                        
+                    }else {
+                        
+                        self.tableView.reloadData()
+                        
+                    }
+                }
+            case .error(let error):
+                print(error)
+            }
+        }
+    }
+
     
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         
@@ -286,45 +296,18 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         if SearchTxt.text != "" {
             
             let res = SearchTxt.text
-            
             let ress = res?.lowercased()
             
-            //FIOProgressView.shared.showProgressView(self.view)
-            NetworkManager.searchMovies(urlstr: SearchResEndPoint, movieName: ress ?? "") { res in
-                
-                if successCode == 200 {
-                    
-                    //FIOProgressView.shared.hideProgressView()
-                    var results = res.map { resultss in
-                        
-                        let newArr = resultss.sorted { $0.year ?? "" > $1.year ?? "" }
-                        self.searchData = newArr
-                        
-                        print(self.searchData)
-                        
-                        DispatchQueue.main.async {
-                            
-                            self.SearchTxt.resignFirstResponder()
-                            self.tableView.reloadData()
-                            
-                        }
-                    }
-                }else {
-                    
-                    //FIOProgressView.shared.hideProgressView()
-                    self.showAlert(title: "Warning", msg: "Please check the api or the url")
-                }
-            }
+            self.viewModel.searchMovies(movieName: ress ?? "")
             
         }else {
             
-            //self.isSearch = false
-            //self.searchStat = "yes"
+            self.isSearch = false
+            self.searchStat = "yes"
             self.searchTrailConstraint.constant = 0
-            //            self.dataModel = []
-            //            self.dataModel.removeAll()
-            //            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
-            //            self.FetchMovie()
+            self.viewModel.dataModel = []
+            self.viewModel.dataModel.removeAll()
+            self.viewModel.fetchData()
         }
     }
 }

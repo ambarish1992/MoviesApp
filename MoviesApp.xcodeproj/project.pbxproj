@@ -20,6 +20,7 @@
 		334B1EA42C967E2600CD65CC /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334B1EA32C967E2600CD65CC /* Model.swift */; };
 		334B1EA82C96862300CD65CC /* MovieDetailsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334B1EA72C96862300CD65CC /* MovieDetailsViewController.swift */; };
 		334B1EAA2C96873200CD65CC /* SplashViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334B1EA92C96873200CD65CC /* SplashViewController.swift */; };
+		3379055C2CA26A4E00108227 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3379055B2CA26A4E00108227 /* ViewModel.swift */; };
 		337F02DC2C96A94A00E68EB1 /* MovieListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337F02DB2C96A94A00E68EB1 /* MovieListViewController.swift */; };
 		337F02DE2C96B5D400E68EB1 /* NetworkStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337F02DD2C96B5D400E68EB1 /* NetworkStatus.swift */; };
 		337F02E02C96B71400E68EB1 /* FIOProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337F02DF2C96B71400E68EB1 /* FIOProgressView.swift */; };
@@ -63,6 +64,7 @@
 		334B1EA32C967E2600CD65CC /* Model.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		334B1EA72C96862300CD65CC /* MovieDetailsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieDetailsViewController.swift; sourceTree = "<group>"; };
 		334B1EA92C96873200CD65CC /* SplashViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashViewController.swift; sourceTree = "<group>"; };
+		3379055B2CA26A4E00108227 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		337F02DB2C96A94A00E68EB1 /* MovieListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MovieListViewController.swift; sourceTree = "<group>"; };
 		337F02DD2C96B5D400E68EB1 /* NetworkStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkStatus.swift; sourceTree = "<group>"; };
 		337F02DF2C96B71400E68EB1 /* FIOProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FIOProgressView.swift; sourceTree = "<group>"; };
@@ -206,6 +208,7 @@
 			isa = PBXGroup;
 			children = (
 				337F02E72C96BCE900E68EB1 /* Service.swift */,
+				3379055B2CA26A4E00108227 /* ViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 				334B1EA22C967E1900CD65CC /* Constants.swift in Sources */,
 				337F02DE2C96B5D400E68EB1 /* NetworkStatus.swift in Sources */,
 				334B1EAA2C96873200CD65CC /* SplashViewController.swift in Sources */,
+				3379055C2CA26A4E00108227 /* ViewModel.swift in Sources */,
 				337F02E02C96B71400E68EB1 /* FIOProgressView.swift in Sources */,
 				337F02E62C96B98A00E68EB1 /* EnumCases.swift in Sources */,
 				33198E052C95FF8D00CC5BFE /* AppDelegate.swift in Sources */,

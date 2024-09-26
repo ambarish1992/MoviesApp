@@ -7,88 +7,105 @@
 
 import Foundation
 
-class NetworkManager {
-    
-    
-    class func fetchMovies(urlstr: String, completion: @escaping(Result<MovieInfo, Error>) -> Void) {
-        
-        var request: URLRequest?
-        var responsemodel = MovieInfo()
-        
-        print(urlstr)
-        
-        request = URLRequest(url: URL(string: urlstr)!)
-        
-        request?.httpMethod = "GET"
-        
-        let task = URLSession.shared.dataTask(with: request!) { (data, response, _) in
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                
-                successCode = httpResponse.statusCode
-                
-                if successCode == 200 {
-                    
-                    if let data = data {
-                        
-                        let res = try? JSONDecoder().decode(MovieInfo.self, from: data)
-                        
-                        completion(.success((res ?? responsemodel)))
-                        
-                    }else {
-                        
-                        completion(.failure(MyErrors.ParsingError))
-                    }
-                }else {
-                    
-                    completion(.failure(MyErrors.ParsingError))
-                }
-            }
-        }
-        task.resume()
+typealias ResultHandler<T> = (Result<T, MyErrors>) -> Void
+
+final class APIManager {
+
+    static let shared = APIManager()
+    private let networkHandler: NetworkHandler
+    private let responseHandler: ResponseHandler
+
+    init(networkHandler: NetworkHandler = NetworkHandler(),
+         responseHandler: ResponseHandler = ResponseHandler()) {
+        self.networkHandler = networkHandler
+        self.responseHandler = responseHandler
     }
-    
-    class func searchMovies(urlstr: String, movieName: String, completion: @escaping(Result<[Search], Error>) -> Void) {
+
+    func request<T: Codable>(
+        modelType: T.Type,
+        url: URL?,
+        completion: @escaping ResultHandler<T>
+    ) {
+        guard let url = url else {
+            completion(.failure(.invalidURL)) // I forgot to mention this in the video
+            return
+        }
+
+        print(url)
         
-        let urlComps: NSURLComponents?
-        let urlComps1: NSURLComponents?
-        let result: URL?
-        let results: URL?
-        var request: URLRequest?
-        var responseModel = [Search]()
-        
-        let ress = "&s=\(movieName)"
-        
-        request = URLRequest(url: URL(string: urlstr+(ress))!)
-        print(request)
-        
-        request?.httpMethod = "GET"
-        
-        let task = URLSession.shared.dataTask(with: request!) { (data, response, _) in
-            
-            if let httpResponse = response as? HTTPURLResponse {
-                
-                successCode = httpResponse.statusCode
-                
-                if successCode == 200 {
-                    
-                    if let data = data {
-                        
-                        let res = try? JSONDecoder().decode(SearchInfo.self, from: data)
-                        
-                        completion(.success(res?.search ?? responseModel))
-                        
-                    }else {
-                        
-                        completion(.failure(MyErrors.ParsingError))
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        request.allHTTPHeaderFields = ["Content-Type": "application/json"]
+
+        // Network Request - URL TO DATA
+        networkHandler.requestDataAPI(url: request) { result in
+            switch result {
+            case .success(let data):
+                // Json parsing - Decoder - DATA TO MODEL
+                self.responseHandler.parseResonseDecode(
+                    data: data,
+                    modelType: modelType) { response in
+                        switch response {
+                        case .success(let mainResponse):
+                            completion(.success(mainResponse)) // Final
+                        case .failure(let error):
+                            completion(.failure(error))
+                        }
                     }
-                    
-                }else {
-                    
-                    completion(.failure(MyErrors.ParsingError))
-                }
+            case .failure(let error):
+                completion(.failure(error))
             }
         }
-        task.resume()
+    }
+
+
+    static var commonHeaders: [String: String] {
+        return [
+            "Content-Type": "application/json"
+        ]
+    }
+
+}
+
+class NetworkHandler {
+
+    func requestDataAPI(
+        url: URLRequest,
+        completionHandler: @escaping (Result<Data, MyErrors>) -> Void
+    ) {
+        let session = URLSession.shared.dataTask(with: url) { data, response, error in
+            guard let response = response as? HTTPURLResponse,
+                  200 ... 299 ~= response.statusCode else {
+                completionHandler(.failure(.invalidResponse))
+                return
+            }
+
+            guard let data, error == nil else {
+                completionHandler(.failure(.invalidData))
+                return
+            }
+
+            completionHandler(.success(data))
+        }
+        session.resume()
+    }
+}
+
+class ResponseHandler {
+
+    func parseResonseDecode<T: Decodable>(
+        data: Data,
+        modelType: T.Type,
+        completionHandler: ResultHandler<T>
+    ) {
+        
+        do {
+            let userResponse = try JSONDecoder().decode(modelType, from: data)
+            
+            completionHandler(.success(userResponse))
+        }catch {
+            completionHandler(.failure(.decoding(error)))
+        }
     }
 }
