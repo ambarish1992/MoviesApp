@@ -148,9 +148,9 @@ extension MovieListViewController {
     }
     
     @objc func cancelPressed(){
-        self.dataModel = []
-        self.dataModel.removeAll()
+        self.viewModel.dataModel = []
+        self.viewModel.dataModel.removeAll()
         //self.showAlert(title: "Warning", msg: "Please type a movie to search")
-        self.FetchMovie()
+        self.viewModel.fetchData()
     }
 }
