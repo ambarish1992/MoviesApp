@@ -4,10 +4,7 @@
 <dict>
 	<key>UIMainStoryboardFile</key>
 	<string>Main</string>
-	<key>NSAppTransportSecurity</key>
-	<dict>
-		<key>NSAllowsArbitraryLoads</key>
-		<true/>
-	</dict>
+	<key>UIUserInterfaceStyle</key>
+	<string>Light</string>
 </dict>
 </plist>

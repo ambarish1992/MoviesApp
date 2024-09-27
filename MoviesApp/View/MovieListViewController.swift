@@ -28,11 +28,12 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        self.observeEvent()
+        
         self.isSearch = false
         self.addToolBar(textField: self.SearchTxt)
         self.searchTrailConstraint.constant = 0
         self.SearchTxt.delegate = self
+        
         // Do any additional setup after loading the view.
     }
     
@@ -58,10 +59,14 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     
     override func viewWillAppear(_ animated: Bool) {
         
-        self.checkInternet()
-        
-        self.viewModel.dataModel = []
-        self.viewModel.fetchData()
+        DispatchQueue.global().async {
+            
+            self.observeEvent()
+            self.checkInternet()
+            self.viewModel.dataModel = []
+            self.viewModel.fetchData()
+            
+        }
     }
 }
 

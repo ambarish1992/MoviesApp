@@ -15,7 +15,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         
-        UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = .light
+        //UIApplication.shared.keyWindow?.overrideUserInterfaceStyle = .light
         
         if Reachability.isConnectedToNetwork(){
             print("Internet Connection Available!")
