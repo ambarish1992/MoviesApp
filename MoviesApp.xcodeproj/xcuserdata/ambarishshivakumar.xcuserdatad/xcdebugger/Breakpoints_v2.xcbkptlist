@@ -7,16 +7,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "74954F02-D563-47A6-9FBC-00C3BA5D6D6E"
-            shouldBeEnabled = "No"
+            uuid = "0E005D29-7BFD-4B19-8152-089857A45716"
+            shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MoviesApp/ViewModel/ViewModel.swift"
+            filePath = "MoviesApp/View/MovieListViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
-            landmarkName = "searchMovies(movieName:)"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
+            landmarkName = "searchBtnTapped(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

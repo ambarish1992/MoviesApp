@@ -28,7 +28,8 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        self.checkInternet()
+        self.observeEvent()
         self.isSearch = false
         self.addToolBar(textField: self.SearchTxt)
         self.searchTrailConstraint.constant = 0
@@ -39,32 +40,45 @@ class MovieListViewController: UIViewController, UISearchBarDelegate {
     
     @IBAction func searchBtnTapped(_ sender: Any) {
         
+        print(self.searchStat)
+        
         if self.searchStat == "yes" {
             
             self.searchTrailConstraint.constant = 0
             SearchTxt.text = ""
             self.SearchTxt.resignFirstResponder()
-            self.viewModel.dataModel = []
-            self.viewModel.fetchData()
+            self.fetchInit()
             
         }else {
             
-            let res = SearchTxt.text
-            let ress = res?.lowercased()
-            
-            self.viewModel.searchMovies(movieName: ress ?? "")
+            self.fetchedMovies()
             
         }
     }
     
     override func viewWillAppear(_ animated: Bool) {
         
-        DispatchQueue.global().async {
+        self.fetchInit()
+        
+    }
+    
+    func fetchInit() {
+        
+        DispatchQueue.global(qos: .background).async { [weak self] in
+           
+            self?.viewModel.dataModel = []
+            self?.viewModel.fetchData()
             
-            self.observeEvent()
-            self.checkInternet()
-            self.viewModel.dataModel = []
-            self.viewModel.fetchData()
+        }
+    }
+    
+    func fetchedMovies() {
+        
+        DispatchQueue.main.async { [weak self] in
+           
+            let res = self?.SearchTxt.text
+            let ress = res?.lowercased()
+            self?.viewModel.searchMovies(movieName: ress ?? "")
             
         }
     }
@@ -172,7 +186,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
                 self.result.removeObject(forKey: "status")
                 self.result.set(self.status, forKey: "status")
                 self.result.synchronize()
-                self.viewModel.fetchData()
+                self.fetchInit()
                 
             }else {
                 
@@ -181,7 +195,7 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
                 self.result.removeObject(forKey: "status")
                 self.result.set(self.status, forKey: "status")
                 self.result.synchronize()
-                self.viewModel.fetchData()
+                self.fetchInit()
                 
             }
         }
@@ -211,15 +225,14 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         
         if self.SearchTxt.text != "" {
             
-            self.viewModel.searchMovies(movieName: self.SearchTxt.text ?? "")
+            self.searchStat = "no"
+            self.fetchedMovies()
             
         }else {
             
             self.isSearch = false
-            self.viewModel.dataModel = []
-            self.viewModel.dataModel.removeAll()
-            //self.showAlert(title: "Warning", msg: "Please type a movie to search")
-            self.viewModel.fetchData()
+            self.searchStat = "yes"
+            self.fetchInit()
             
         }
     }
@@ -263,16 +276,6 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         self.searchTrailConstraint.constant = -50
         self.SearchTxt.becomeFirstResponder()
         
-//        if self.SearchTxt.text != "" {
-//            
-//            self.searchTrailConstraint.constant = -50
-//            self.isSearch = true
-//            
-//        }else {
-//            
-//            self.searchTrailConstraint.constant = 0
-//            self.isSearch = false
-//        }
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -284,12 +287,12 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
         
         if self.SearchTxt.text != "" {
             
-            self.searchStat = "yes"
+            self.searchStat = "no"
             self.searchBtn.setImage(UIImage(named: "Close"), for: .normal)
             
         }else {
             
-            self.searchStat = "no"
+            self.searchStat = "yes"
             self.searchBtn.setImage(UIImage(systemName: "magnifyingglass"), for: .normal)
         }
     }
@@ -302,17 +305,15 @@ extension MovieListViewController: UITableViewDelegate, UITableViewDataSource {
             
             let res = SearchTxt.text
             let ress = res?.lowercased()
-            
-            self.viewModel.searchMovies(movieName: ress ?? "")
+            self.searchStat = "no"
+            self.fetchedMovies()
             
         }else {
             
             self.isSearch = false
             self.searchStat = "yes"
             self.searchTrailConstraint.constant = 0
-            self.viewModel.dataModel = []
-            self.viewModel.dataModel.removeAll()
-            self.viewModel.fetchData()
+            self.fetchInit()
         }
     }
 }
