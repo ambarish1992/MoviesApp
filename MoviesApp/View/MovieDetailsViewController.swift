@@ -41,7 +41,7 @@ class MovieDetailsViewController: UIViewController {
             self.titleLbl.text = self.movieData?.title
             self.genreLbl.text = self.movieData?.genre
             self.descriptionLbl.text = self.movieData?.plot
-            self.IMDBrateLbl.text = "\(self.movieData?.imdbRating ?? "")/10"
+            self.IMDBrateLbl.text = "\(self.movieData?.imdbRating ?? "") / 10"
         }
     }
     
